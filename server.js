@@ -18,30 +18,27 @@ app.set('view engine', 'ejs');
 
 var QuoteSchema = new mongoose.Schema({
     name: String,
-    quote: String
+    quote: String,
+    likes: Number
 });
 var Quote = mongoose.model('Quote', QuoteSchema);
 
+QuoteSchema.path('name').required(true, 'Name cannot be blank');
+QuoteSchema.path('quote').required(true, 'Quote cannot be blank');
+
 // root route
 app.get('/', function(req, res) {
-//    User.find({}, function(err, users){
-//        if(err){
-//            console.log('something went wrong retrieving users');
-//        } else{
-////            console.log(users);
-//            res.render('index', {users: users});
-//        }
         res.render('index');
-//    });
 });
 // route to add a user
 app.post('/quotes', function(req, res) {
     console.log("POST DATA", req.body);
     // create a new Quote with the name and quote corresponding to those from req.body
-    var quote = new Quote({name: req.body.name, quote: req.body.quote});
+    var quote = new Quote({name: req.body.name, quote: req.body.quote, likes: 0});
     quote.save(function(err){
         if(err){
-            console.log('something went wrong');
+//            console.log('something went wrong');
+            res.render('index', {title: 'you have errors!', errors: quote.errors});
         } else{
             console.log('successfully added a quote!');
             res.redirect('/quotes');
@@ -50,7 +47,14 @@ app.post('/quotes', function(req, res) {
 //    res.redirect('/');
 });
 app.get('/quotes', function(req, res){
-    res.render('quotes');
+    Quote.find({}, function(err, quotes){
+        if(err){
+            console.log(err);
+        } else{
+            console.log(quotes);
+            res.render('quotes', {quotes: quotes});
+        }
+    });
 });
 // listen on 8000
 app.listen(8000, function() {

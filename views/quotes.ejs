@@ -6,5 +6,10 @@
 </head>
 <body>
     <h3>Here are the awesome quotes!</h3>
+    <% for(var x in quotes){ %>
+        <p>"<%= quotes[x].quote %>"</p>
+        <p class='named'>-<%= quotes[x].name %></p>
+        <hr>
+    <% } %>
 </body>
 </html>
