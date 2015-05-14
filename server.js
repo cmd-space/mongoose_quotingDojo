@@ -37,22 +37,29 @@ app.post('/quotes', function(req, res) {
     var quote = new Quote({name: req.body.name, quote: req.body.quote, likes: 0});
     quote.save(function(err){
         if(err){
-//            console.log('something went wrong');
-            res.render('index', {title: 'you have errors!', errors: quote.errors});
+            console.log(quote.errors);
+            res.render('index', {errors: quote.errors});
         } else{
             console.log('successfully added a quote!');
             res.redirect('/quotes');
         }
     });
-//    res.redirect('/');
+});
+app.post('/like', function(req, res){
+    var liked = Number(req.body.num_likes) + 1;
+    Quote.update({_id: req.body.id}, {likes: liked}, function(err, like){
+//        Quote.find().sort({likes: -1});
+        res.redirect('/quotes');
+    });
 });
 app.get('/quotes', function(req, res){
     Quote.find({}, function(err, quotes){
         if(err){
             console.log(err);
         } else{
-            console.log(quotes);
+            Quote.find({}).sort({likes: -1}).exec(function(err, quotes){
             res.render('quotes', {quotes: quotes});
+            });
         }
     });
 });
